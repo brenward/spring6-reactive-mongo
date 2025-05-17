@@ -1,7 +1,9 @@
 package com.bwardweb.spring6_reactive_mongo.bootstrap;
 
 import com.bwardweb.spring6_reactive_mongo.domain.Beer;
+import com.bwardweb.spring6_reactive_mongo.domain.Customer;
 import com.bwardweb.spring6_reactive_mongo.repositories.BeerRepository;
+import com.bwardweb.spring6_reactive_mongo.repositories.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -16,6 +18,9 @@ public class BootstrapData implements CommandLineRunner {
     @Autowired
     BeerRepository beerRepository;
 
+    @Autowired
+    CustomerRepository customerRepository;
+
     @Override
     public void run(String... args) throws Exception {
         beerRepository.deleteAll().doOnSuccess(success -> {
@@ -24,6 +29,14 @@ public class BootstrapData implements CommandLineRunner {
 
         beerRepository.count().subscribe(count -> {
             System.out.println("Beer Count: " + count);
+        });
+
+        customerRepository.deleteAll().doOnSuccess(success -> {
+            loadCustomerData();
+        }).subscribe();
+
+        customerRepository.count().subscribe(count -> {
+            System.out.println("Customer Count: " + count);
         });
     }
 
@@ -63,6 +76,20 @@ public class BootstrapData implements CommandLineRunner {
                 beerRepository.save(beer1).subscribe();
                 beerRepository.save(beer2).subscribe();
                 beerRepository.save(beer3).subscribe();
+            }
+        });
+    }
+    private void loadCustomerData() {
+        customerRepository.count().subscribe(count -> {
+            if(count == 0){
+                customerRepository.save(Customer.builder()
+                        .customerName("John").build()).subscribe();
+
+                customerRepository.save(Customer.builder()
+                        .customerName("Mary").build()).subscribe();
+
+                customerRepository.save(Customer.builder()
+                        .customerName("Freeman").build()).subscribe();
             }
         });
     }
