@@ -145,7 +145,7 @@ class BeerServiceImplTest {
     }
 
     @Test
-    void findFirstByBeerStyle(){
+    void findByBeerStyle(){
         BeerDTO beerDto = getSavedBeerDto();
         AtomicBoolean atomicBoolean = new AtomicBoolean(false);
 
