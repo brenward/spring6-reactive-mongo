@@ -1,5 +1,6 @@
 package com.bwardweb.spring6_reactive_mongo.services;
 
+import com.bwardweb.spring6_reactive_mongo.domain.Beer;
 import com.bwardweb.spring6_reactive_mongo.model.BeerDTO;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -19,5 +20,7 @@ public interface BeerService {
     Mono<Void> deleteBeer(String beerId);
 
     Flux<BeerDTO> listBeers();
+
+    Mono<BeerDTO> findFirstByBeerName(String beerName);
 
 }

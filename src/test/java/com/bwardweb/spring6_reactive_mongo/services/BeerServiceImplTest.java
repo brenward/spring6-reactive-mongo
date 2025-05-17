@@ -129,6 +129,21 @@ class BeerServiceImplTest {
 
     }
 
+    @Test
+    void findFirstByBeerName(){
+        BeerDTO beerDto = getSavedBeerDto();
+        AtomicBoolean atomicBoolean = new AtomicBoolean(false);
+
+        Mono<BeerDTO> foundDTO = beerService.findFirstByBeerName(beerDto.getBeerName());
+
+        foundDTO.subscribe(dto -> {
+            System.out.println(dto.toString());
+            atomicBoolean.set(true);
+        });
+
+        await().untilTrue(atomicBoolean);
+    }
+
     public BeerDTO getSavedBeerDto(){
         return beerService.saveNewBeer(Mono.just(getTestBeerDto())).block();
     }
