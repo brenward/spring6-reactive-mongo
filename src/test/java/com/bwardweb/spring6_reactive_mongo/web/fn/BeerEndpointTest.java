@@ -14,12 +14,15 @@ import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWeb
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.util.UriComponentsBuilder;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+
+import static org.hamcrest.Matchers.equalTo;
 
 @Testcontainers
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -162,6 +165,27 @@ public class BeerEndpointTest {
                 .header("Content-Type", "application/json")
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+
+    @Test
+    void testListBeersByStyle() {
+        final String BEER_STYLE = "TEST";
+        BeerDTO testDto = getSavedBeerDto();
+        testDto.setBeerStyle(BEER_STYLE);
+
+        //create test data
+        webTestClient.post().uri(BeerRouterConfig.BEER_PATH)
+                .body(Mono.just(testDto), BeerDTO.class)
+                .header("Content-Type", "application/json")
+                .exchange();
+
+        webTestClient.get().uri(UriComponentsBuilder
+                        .fromPath(BeerRouterConfig.BEER_PATH)
+                        .queryParam("beerStyle", BEER_STYLE).build().toUri())
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().valueEquals("Content-type", "application/json")
+                .expectBody().jsonPath("$.size()").value(equalTo(1));
     }
 
     public BeerDTO getSavedBeerDto(){
