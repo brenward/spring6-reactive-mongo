@@ -91,8 +91,11 @@ public class BeerEndpointTest {
     @Test
     @Order(3)
     void testUpdateBeer(){
-        webTestClient.put().uri(BeerRouterConfig.BEER_PATH_ID, 1)
-                .body(Mono.just(getTestBeer()), BeerDTO.class)
+        BeerDTO savedBeerDto = getSavedBeerDto();
+        savedBeerDto.setBeerStyle("Changed");
+
+        webTestClient.put().uri(BeerRouterConfig.BEER_PATH_ID, savedBeerDto.getId())
+                .body(Mono.just(savedBeerDto), BeerDTO.class)
                 .header("Content-Type", "application/json")
                 .exchange()
                 .expectStatus().isNoContent();
