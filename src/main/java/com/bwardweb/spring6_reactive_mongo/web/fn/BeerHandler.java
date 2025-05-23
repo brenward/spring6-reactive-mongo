@@ -35,7 +35,8 @@ public class BeerHandler {
         Flux<BeerDTO> flux;
 
         if(request.queryParam("beerStyle").isPresent()){
-            flux = beerService.findByBeerStyle(request.queryParam("beerStyle").get());
+            flux = beerService.findByBeerStyle(request.queryParam("beerStyle").get())
+                    .switchIfEmpty(Flux.error(new ResponseStatusException(HttpStatus.NOT_FOUND)));
         } else {
             flux = beerService.listBeers();
         }
